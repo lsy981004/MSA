@@ -37,7 +37,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                                 HttpServletResponse response) throws AuthenticationException {
 
         try {
-            RequestLogin creds = new ObjectMapper().readValue(request.getInputStream(), RequestLogin.class);
+            RequestLogin creds = new ObjectMapper().readValue(request.getInputStream(), RequestLogin.class); // 디버깅 코드 (어떤 게 먼저 호출되는지 알 수 있다)
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -47,6 +47,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         } catch (IOException e){
             throw new RuntimeException(e);
         }
+
 
     }
 
