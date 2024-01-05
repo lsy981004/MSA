@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 public class WebSecurity{
     private final AuthenticationConfiguration authConfig;
     private final UserService userService;
-    private final Environment environment;
+    private final Environment env;
 
     @Bean
     public MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
@@ -60,7 +60,7 @@ public class WebSecurity{
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
         AuthenticationManager authenticationManager = authConfig.getAuthenticationManager();
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager,
-                userService, environment);
+                userService, env);
         return authenticationFilter;
     }
 }

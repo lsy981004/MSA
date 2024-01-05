@@ -1,8 +1,11 @@
 package com.example.userservice.security;
 
+import com.example.userservice.dto.UserDto;
 import com.example.userservice.service.UserService;
 import com.example.userservice.vo.RequestLogin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,23 +15,25 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final String EXPIRATION_TIME = "token.expiration_time";
     public static final String SECRET = "token.secret";
-    private final UserService userService;
-    private final Environment environment;
+    private UserService userService;
+    private Environment env;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager,
-                                UserService userService, Environment environment) {
+                                UserService userService, Environment env) {
         super(authenticationManager);
         this.userService = userService;
-        this.environment = environment;
+        this.env = env;
     }
 
 
@@ -56,7 +61,18 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-//        super.successfulAuthentication(request, response, chain, authResult);
+        String userName = ((User)authResult.getPrincipal()).getUsername();
+        UserDto userDetails = userService.getUserDetailsByEmail(userName);
+
+        String token = Jwts.builder()
+                .setSubject(userDetails.getUserId())
+                .setExpiration(new Date(System.currentTimeMillis() +
+                        Long.parseLong(env.getProperty("token.expiration_time")))) // 언제까지 유효할 것인지
+                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret")) // 암호화
+                .compact(); // 토큰 생성
+
+        response.addHeader("token", token); // 토큰 값 헤더에 저장
+        response.addHeader("userId", userDetails.getUserId()); // 토큰이 정상적으로 만들어졌는지 확인해보기 위한 값
     }
 
 }
