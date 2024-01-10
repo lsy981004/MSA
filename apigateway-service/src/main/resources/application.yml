@@ -11,6 +11,11 @@ eureka:
 spring:
   application:
     name: apigateway-service
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
   cloud:
     gateway:
       default-filters:
@@ -65,6 +70,14 @@ spring:
             uri: lb://ORDER-SERVICE
             predicates:
               - Path=/order-service/**
+          - id: order-service
+            uri: lb://ORDER-SERVICE
+            predicates:
+              - Path=/order-service/actuator/**
+              - Method=GET
+            filters:
+              - RemoveRequestHeader=Cookie
+              - RewritePath=/order-service/(?<segment>.*), /$\{segment}
           - id: first-service
             uri: lb://MY-FIRST-SERVICE
             predicates:
@@ -87,11 +100,11 @@ spring:
                   preLogger: true
                   postLogger: true
 
-token:
-  secret: user_token
+#token:
+#  secret: user_token
 management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, beans, httpexchanges
+        include: refresh, health, beans, httpexchanges, busrefresh, info, metrics, prometheus
 

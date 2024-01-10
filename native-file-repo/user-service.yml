@@ -1,6 +1,18 @@
+spring:
+    datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: '{cipher}AQAL4bL1U37k4zFVX1oyC4msFLawwQ4WwfyLwe3Vh3zxlgq7LgiJHd5AVMSLtUCQUB7AhFf5w4coT7RJN3ftf6lyWTCjOE/2eu17jqomscK4sL8jVvsPvmJK/Sxp1dEbiIEy/mgdI4yUMrgO5wLM6m/DQ+f1lny8qy9cZO5voM3x1TTn4lqf6W0bqLX1GlFGNxG/SiBE21qGlfq/Huv0OqRbCU3Qj0f9DdUg70n9qJq3USezPK1eH8b2hIoRda6XM9KV+UVVME2hXobx7nNhxgWg/p6Q5I589rRBvz9STIZCq7YKAPaCiTrGgNv45UstaSuTy510+qGiTCgw1lwMHcCv0k9O+nCuxMyQJM1nOXwBoYhH8aC4lUgt652Dh16d3Tg='
+    generate-unique-name: false
+    name: testdb
+
 token:
   expiration_time: 864000000
-  secret: user_token_native__user_ecommerce
+  secret: user_token_native_user_service_default
 
 gateway:
   ip: 220.75.198.105
+
+order_service:
+  url: http://ORDER-SERVICE/order-service/%s/orders
